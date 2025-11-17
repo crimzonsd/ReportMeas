@@ -103,4 +103,8 @@ xlsxwriter==3.2.9
 xyzservices==2025.1.0
 zope.event==5.0
 zope.interface==7.2
+Flask-WTF
+Flask-Login
+waitress
+python-telegram-bot
 
