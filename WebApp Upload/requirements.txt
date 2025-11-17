@@ -52,7 +52,7 @@ passlib==1.7.4
 pefile==2023.2.7
 pillow==11.0.0
 plotly==5.24.1
-psycopg2-binary==2.9.10
+psycopg2==2.9.10
 py4j==0.10.9.7
 pyasn1==0.6.1
 pycparser==2.22
@@ -103,3 +103,4 @@ xlsxwriter==3.2.9
 xyzservices==2025.1.0
 zope.event==5.0
 zope.interface==7.2
+
