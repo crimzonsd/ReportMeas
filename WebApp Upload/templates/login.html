@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KPI Report Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Menggunakan file CSS yang sama dengan aplikasi utama -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <div style="width: 100%; max-width: 400px; padding: 40px; background-color: var(--bg-secondary); border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border-color);">
+        
+        <div class="sidebar-header" style="justify-content: center; margin-bottom: 25px;">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8.11 2.99"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+            <h1>KPI Report Generator</h1>
+        </div>
+
+        <!-- Menampilkan pesan error/sukses dari flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding: 12px; margin-bottom: 20px; border-radius: 6px; text-align: center; border: 1px solid {{ 'var(--color-error)' if category == 'error' else 'var(--color-success)' }}; background-color: {{ 'rgba(255, 118, 117, 0.1)' if category == 'error' else 'rgba(46, 204, 113, 0.1)' }};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            {{ form.hidden_tag() }}
+            <div style="margin-bottom: 15px;">
+                <label for="username" style="font-weight: 500;">{{ form.username.label }}</label>
+                {{ form.username(class="form-input", style="margin-top: 8px;") }}
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label for="password" style="font-weight: 500;">{{ form.password.label }}</label>
+                {{ form.password(class="form-input", style="margin-top: 8px;") }}
+            </div>
+            <!-- PERBAIKAN DI SINI: Menambahkan style="width: 100%;" -->
+            {{ form.submit(class="btn-primary", style="width: 100%; padding: 14px;") }}
+        </form>
+    </div>
+</body>
+</html>

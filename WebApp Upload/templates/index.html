@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Report Generator</title>
+    <!-- Load Font Inter dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Menggunakan CSS utama yang sudah diperbaiki -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <!-- Icon Diagram (Chart Pie) -->
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8.11 2.99"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                <h1>KPI Report Generator</h1>
+            </div>
+            <!-- Indikator Langkah Navigasi -->
+            <ul class="step-indicator">
+                <li id="nav-step1" class="active">1. Database</li>
+                <li id="nav-step2">2. Koneksi</li>
+                <li id="nav-step3">3. Opsi Data</li>
+                <li id="nav-step4">4. Pilihan Kolom</li>
+                <li id="nav-step5">5. Kondisi & Hasil</li>
+                <li id="nav-logout">
+                    <a href="{{ url_for('logout') }}">
+                        <!-- Icon Logout -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <!-- Step 1: Database -->
+            <div id="step1" class="step">
+                <h2>Langkah 1: Pilih Sumber Database</h2>
+                <div class="radio-group">
+                    <label><input type="radio" name="db_type" value="postgres" checked><span>PostgreSQL</span></label>
+                    <label id="db-mysql-label"><input type="radio" name="db_type" value="mysql"><span>MySQL</span></label>
+                </div>
+                <!-- Tombol Lanjutkan di Langkah 1 -->
+                <div class="nav-buttons"><span></span><button class="btn-primary" onclick="ui.goToStep(2)">Lanjutkan →</button></div>
+            </div>
+
+            <!-- Step 2: Koneksi -->
+            <div id="step2" class="step hidden">
+                <h2>Langkah 2: Uji Koneksi</h2>
+                <button id="test-conn-btn" class="btn-primary">Test Connection</button>
+                <div id="test-conn-status" style="margin-top: 20px; text-align: center;"></div>
+                <div class="nav-buttons"><button class="btn-secondary" onclick="ui.goToStep(1)">← Kembali</button></div>
+            </div>
+
+            <!-- Step 3: Opsi Data -->
+            <div id="step3" class="step hidden">
+                <h2>Langkah 3: Pilih Opsi Data</h2>
+                <h4>Teknologi</h4>
+                <div class="radio-group">
+                    <label><input type="radio" name="tech" value="4G" id="tech-4g-radio" checked><span>4G</span></label>
+                    <label id="tech-5g-label"><input type="radio" name="tech" value="5G"><span>5G</span></label>
+                    <label id="tech-2g-label"><input type="radio" name="tech" value="2G"><span>2G</span></label>
+                </div>
+                <h4 style="margin-top: 20px;">Timestamp</h4>
+                <div class="radio-group">
+                    <label><input type="radio" name="granularity" value="daily" checked><span>Daily</span></label>
+                    <label><input type="radio" name="granularity" value="hourly"><span>Hourly</span></label>
+                    
+                    <!-- Weekly & Monthly (Tampilkan maintenance text secara default, disembunyikan oleh JS jika Postgres) -->
+                    <label id="granularity-weekly-label"><input type="radio" name="granularity" value="weekly"><span>Weekly<span class="maintenance-text"> (Maintenance)</span></span></label>
+                    <label id="granularity-monthly-label"><input type="radio" name="granularity" value="monthly"><span>Monthly<span class="maintenance-text"> (Maintenance)</span></span></label>
+                    
+                    <!-- Busy Hour (Tersembunyi secara default, ditampilkan oleh JS jika MySQL) -->
+                    <label id="granularity-bh-label" class="hidden"><input type="radio" name="granularity" value="busy_hour"><span>Busy Hour</span></label>
+                </div>
+                <h4 style="margin-top: 20px;">Level Agregasi</h4>
+                <div class="radio-group">
+                    <label><input type="radio" name="agg_level" value="cell" checked><span>Cell Level</span></label>
+                    <label><input type="radio" name="agg_level" value="site"><span>Site Level</span></label>
+                    <label><input type="radio" name="agg_level" value="nop"><span>NOP Level</span></label>
+                    <label><input type="radio" name="agg_level" value="kabupaten"><span>Kabupaten Level</span></label>
+                    <label><input type="radio" name="agg_level" value="balnus"><span>Balnus Level</span></label>
+                </div>
+                <!-- Tombol Lanjutkan di Langkah 3 (dinonaktifkan/Memuat oleh JS) -->
+                <div class="nav-buttons"><button class="btn-secondary" onclick="ui.goToStep(2)">← Kembali</button><button class="btn-primary" onclick="ui.goToStep(4)">Lanjutkan →</button></div>
+            </div>
+
+            <!-- Step 4: Pilihan Kolom -->
+            <div id="step4" class="step hidden">
+                <h2>Langkah 4: Pilih Kolom Data</h2>
+                <div class="mode-switcher">
+                    <button id="mode-simple-btn" class="active">Simple</button>
+                    <button id="mode-advanced-btn">Advanced</button>
+                </div>
+                <div id="kpi-options-container">
+                    <!-- Loader KPI -->
+                    <div id="kpi-options-loader" class="loader-container hidden">
+                        <div class="loader"></div>
+                        <p>Memuat Opsi KPI...</p>
+                    </div>
+                    <div id="kpi-options">
+                        <!-- Konten KPI akan dimuat di sini oleh JavaScript (ui.renderKpiCheckboxes) -->
+                        <div class="info-box"><p>Pilih Database, Teknologi, dan Timestamp di Langkah 3 terlebih dahulu.</p></div>
+                    </div>
+                </div>
+                <div class="nav-buttons"><button class="btn-secondary" onclick="ui.goToStep(3)">← Kembali</button><button class="btn-primary" onclick="ui.goToStep(5)">Lanjutkan →</button></div>
+            </div>
+
+            <!-- Step 5: Kondisi & Hasil -->
+            <div id="step5" class="step hidden">
+                <h2>Langkah 5: Atur Kondisi & Generate Laporan</h2>
+                
+                <label id="start-date-label" for="start-date">Tanggal Mulai</label>
+                <input type="date" id="start-date" class="form-input">
+                
+                <label id="end-date-label" for="end-date">Tanggal Selesai</label>
+                <input type="date" id="end-date" class="form-input">
+                
+                <label for="site-ids">Site IDs (pisahkan dengan koma, biarkan kosong untuk semua)</label>
+                <input type="text" id="site-ids" class="form-input" placeholder="Contoh: SITE01,SITE02">
+                
+                <div class="nav-buttons">
+                    <button class="btn-secondary" onclick="ui.goToStep(4)">← Kembali</button>
+                    <button id="generate-btn" class="btn-primary">🚀 Generate & Download Report</button>
+                </div>
+                
+                <!-- Kotak Status/Query SQL Akhir -->
+                <div id="status-box"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script JavaScript -->
+    <script src="{{ url_for('static', filename='js/api.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+</html>
